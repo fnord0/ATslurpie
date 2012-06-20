@@ -1,4 +1,4 @@
-.::[ ArchTrack AUR slurpie v0.2 ]::.
+.::[ ArchTrack AUR/pacman slurpie v0.2 ]::.
 - copyleft
 - fnord0@riseup.net
 
@@ -6,9 +6,9 @@ USAGE: ./atslurpie.pl [-n] <search string> [-f <filename> {-s}]
                                                                                                                                                                         
 COMMAND LINE ARGUMENTS
         -n              => search the AUR tool 'name' field only
-        <search string> => your AUR search string
-        -f <filename>   => search the AUR using a file, with 1 search per line
-        -s              => sort the input file searches NUMBERIC-alphabetically
+        <search string> => your AUR or pacman search string
+        -f <filename>   => search the AUR or pacman using a file, with 1 search per line
+        -s              => sort the input file searches NUMBERIC->alphabetically
         --help          => displays this help
         --version       => displays version information
 
