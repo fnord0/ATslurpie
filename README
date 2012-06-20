@@ -2,14 +2,14 @@
 - copyleft
 - fnord0@riseup.net
 
-USAGE: ./atslurpie.pl [-n] [<search string>|-f <filename> {-s}]
+USAGE: ./atslurpie.pl [-n] <search string> [-f <filename> {-s}]
                                                                                                                                                                         
 COMMAND LINE ARGUMENTS
         -n              => search the AUR tool 'name' field only
         <search string> => your AUR search string
         -f <filename>   => search the AUR using a file, with 1 search per line
         -s              => sort the input file searches NUMBERIC-alphabetically
-        --help          => displays help
+        --help          => displays this help
         --version       => displays version information
 
                 EXAMPLEs:  atslurpie.pl gdb
