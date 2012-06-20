@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# ArchTrack AUR slurpie v0.1 (atslurpie.pl)
+# ArchTrack AUR slurpie v0.2 (atslurpie.pl)
 # copyleft - fnord0@riseup.net
 
 use WWW::Mechanize;
@@ -8,6 +8,8 @@ use HTML::TreeBuilder;
 use Getopt::Std;
 use Term::ANSIColor qw(:constants);
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
+
+my $a = 0;
 
 getopts ('nsf:');
 if ($opt_f) {
@@ -19,13 +21,30 @@ if ($opt_f) {
 	}
         ($line);
 	foreach $line (@lines) {
+	chomp $line;
+	print "----------------------------------------------\n";
+	print "" . BOLD, BLUE, "[" . BOLD, CYAN "*", BOLD, BLUE, . "]", RESET . BOLD, "  Searching for $line\n", RESET;
        		&DOITNOW;
-	}
+		if ($a =~ 0) {
+			my $result = `pacman -Ss $line`;
+			print "\n$result";
+         	} else {
+
+           	}
+        }
        	close(LIST);
+	exit(0);
 } elsif (!@ARGV) {
 	die BOLD, BLUE, "[" . BOLD, RED "!", BOLD, BLUE, . "]", RESET . " you must submit a search request, look at '" . BOLD, BLUE, "--help", RESET . "' for more info\n";
 } else {
 	&DOITNOW;
+        if ($a =~ 0) {
+	        my $result = `pacman -Ss @ARGV`;
+                print "\n$result";
+        } else {
+            
+        }
+	exit(0);
 }
 
 sub DOITNOW {
@@ -34,7 +53,7 @@ my $writefile = '/tmp/aur.html';
 my $mech = WWW::Mechanize->new();
    $mech->cookie_jar(HTTP::Cookies->new( ));
    $mech->get($url);
-   if ($opt_f and  $opt_n = 1) {
+   if (($opt_f) && ($opt_n)) {
    $mech->submit_form(
         form_number => 2,
         fields      => {
@@ -43,13 +62,21 @@ my $mech = WWW::Mechanize->new();
 			SeB  => 'n',   #search name field only
 	}
     );
-   } elsif ($opt_n) {
+   } elsif (($opt_n) && (!$opt_f)) {
    $mech->submit_form(
         form_number => 2,
         fields      => {
                         K    => @ARGV,
                         PP   => '100', #100 results per page
                         SeB  => 'n',   #search name field only
+                       }
+    );
+   } elsif ($opt_f) {
+   $mech->submit_form(
+        form_number => 2,
+        fields      => {
+                        K    => $line,
+                        PP   => '100', #100 results per page
                        }
     );
    } else {
@@ -61,7 +88,7 @@ my $mech = WWW::Mechanize->new();
                         PP   => '100', #100 results per page
                        }
     );
-}
+   }
 
 $mech->success or die "Search failed!\n";
 
@@ -89,6 +116,7 @@ my $stream = HTML::TokeParser->new(\$mech->{content});
 				} elsif ($aurpkg !~ /\s/) {
 					print BOLD, BLUE, "AUR maintainer: ", RESET . "$aurpkg\n";	
 				}
+		$a = 1;
 		}
 
 		if ($tag->[1]{class} and $tag->[1]{class} =~ 'outofdate') {
@@ -109,6 +137,7 @@ my $stream = HTML::TokeParser->new(\$mech->{content});
                                 } elsif ($auroutpkg !~ /\s/) {
                                         print BOLD, RED, "OUTOFDATE :: AUR maintainer: ", RESET . "$auroutpkg\n";
                                 }
+		$a = 2;
                 }
            $stream->get_tag("td");
            $stream->get_tag("td");
@@ -117,9 +146,10 @@ my $stream = HTML::TokeParser->new(\$mech->{content});
                 my $tidbit = $stream->get_text("/span");
 				$tidbit =~ s/\n./$1/g;
                                 print BOLD, BLUE, "AUR Description: ", RESET . "$tidbit\n";
+	$a = 3;
 	}
 
-}
+#}
 
    $streamyy = HTML::TokeParser->new(\$mech->{content});
    $streamyy->get_tag("div");
@@ -135,10 +165,12 @@ my $auridzzi = $streamyy->get_tag("a");
         	print "\n";
         	print BOLD, BLUE, "AUR ID#: ", RESET . "$1\n";
 		&ROOKIE;
+		$a = 4;
         } else {
-		#print "\npeace out, we be done";
 	}
+
 }
+
 sub ROOKIE {
 
 while (my $testnew = $streamyy->get_tag('div', 'div')) {
@@ -178,7 +210,7 @@ sub DOOKIE {
 }
 
 sub VERSION_MESSAGE { my $fh = shift;
-		      print $fh ".::[" . BOLD, RED " ArchTrack AUR slurpie v0.1 " . RESET "]::.\n";
+		      print $fh ".::[" . BOLD, RED " ArchTrack AUR slurpie v0.2 " . RESET "]::.\n";
 }
 
 sub HELP_MESSAGE { my $fh = shift; 
